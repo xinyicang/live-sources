@@ -5,15 +5,15 @@
   },
   "央视": {
     "channels": 19,
-    "sources": 25
+    "sources": 26
   },
   "卫视": {
-    "channels": 23,
-    "sources": 41
+    "channels": 25,
+    "sources": 47
   },
   "地方": {
-    "channels": 177,
-    "sources": 221
+    "channels": 237,
+    "sources": 308
   },
   "港澳": {
     "channels": 1,
@@ -24,13 +24,14 @@
     "sources": 0
   },
   "其他": {
-    "channels": 115,
-    "sources": 118
+    "channels": 125,
+    "sources": 128
   },
   "_total": {
-    "channels": 342,
-    "sources": 416,
+    "channels": 414,
+    "sources": 520,
     "probed": 520,
-    "ok": 416
+    "ok": 520,
+    "mode": "aggregate"
   }
 }
