@@ -39,7 +39,25 @@ def http_get(url, ua=None, rng=True, timeout=TIMEOUT):
     headers = {"User-Agent": ua or UA_LIST[0]}
     if rng:
         headers["Range"] = "bytes=0-2047"
-    return requests.get(url, headers=headers, timeout=timeout, allow_redirects=True, stream=False)
+    return requests.get(url, headers=headers, timeout=(4, timeout), allow_redirects=True, stream=True)
+
+
+def read_head(resp, limit=4096):
+    """只读前 limit 字节就断开——直连流是无限长的，读到底会永远挂住"""
+    buf = b""
+    try:
+        for chunk in resp.iter_content(2048):
+            buf += chunk
+            if len(buf) >= limit:
+                break
+    except Exception:
+        pass
+    finally:
+        try:
+            resp.close()
+        except Exception:
+            pass
+    return buf
 
 
 def fetch_text(url):
@@ -117,9 +135,11 @@ def load_sources():
 
 def probe_segment(seg_url):
     try:
-        r = http_get(seg_url)
-        if r.status_code in (200, 206) and len(r.content) >= 188:
-            return True
+        resp = http_get(seg_url)
+        if resp.status_code in (200, 206):
+            body = read_head(resp, 4096)
+            return len(body) >= 188
+        resp.close()
     except Exception:
         return False
     return False
@@ -137,14 +157,18 @@ def probe(url):
             return "fail"
 
     for ua in UA_LIST:
+        resp = None
         try:
-            r = http_get(url, ua=ua)
-            ct = r.headers.get("Content-Type", "").lower()
-            body = r.content[:4096]
-            if r.status_code in (401, 403, 429):
+            resp = http_get(url, ua=ua)
+            ct = resp.headers.get("Content-Type", "").lower()
+            status = resp.status_code
+            if status in (401, 403, 429):
+                resp.close()
                 continue
-            if r.status_code not in (200, 206):
+            if status not in (200, 206):
+                resp.close()
                 return "fail"
+            body = read_head(resp)
             if b"#EXTM3U" in body:
                 segs = [l.strip() for l in body.decode("utf-8", "ignore").splitlines()
                         if l.strip() and not l.strip().startswith("#")]
@@ -158,6 +182,11 @@ def probe(url):
                 return "stream"
             return "fail"
         except Exception:
+            if resp is not None:
+                try:
+                    resp.close()
+                except Exception:
+                    pass
             continue
     return "fail"
 
