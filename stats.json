@@ -1,37 +1,37 @@
 {
   "儿童": {
-    "channels": 7,
-    "sources": 8
+    "channels": 11,
+    "sources": 15
   },
   "央视": {
-    "channels": 19,
-    "sources": 26
+    "channels": 50,
+    "sources": 117
   },
   "卫视": {
-    "channels": 25,
-    "sources": 47
+    "channels": 45,
+    "sources": 136
   },
   "地方": {
-    "channels": 237,
-    "sources": 308
+    "channels": 251,
+    "sources": 329
   },
   "港澳": {
-    "channels": 1,
-    "sources": 3
+    "channels": 16,
+    "sources": 22
   },
   "国际": {
-    "channels": 0,
-    "sources": 0
+    "channels": 133,
+    "sources": 140
   },
   "其他": {
     "channels": 125,
     "sources": 128
   },
   "_total": {
-    "channels": 414,
-    "sources": 520,
-    "probed": 520,
-    "ok": 520,
+    "channels": 631,
+    "sources": 887,
+    "probed": 890,
+    "ok": 890,
     "mode": "aggregate"
   }
 }
