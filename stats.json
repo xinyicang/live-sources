@@ -1,0 +1,36 @@
+{
+  "儿童": {
+    "channels": 7,
+    "sources": 8
+  },
+  "央视": {
+    "channels": 19,
+    "sources": 25
+  },
+  "卫视": {
+    "channels": 23,
+    "sources": 41
+  },
+  "地方": {
+    "channels": 177,
+    "sources": 221
+  },
+  "港澳": {
+    "channels": 1,
+    "sources": 3
+  },
+  "国际": {
+    "channels": 0,
+    "sources": 0
+  },
+  "其他": {
+    "channels": 115,
+    "sources": 118
+  },
+  "_total": {
+    "channels": 342,
+    "sources": 416,
+    "probed": 520,
+    "ok": 416
+  }
+}
