@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-抓取 sources.txt 里的所有上游源 -> 实测可播性 -> 按分类输出 tv/live.txt 与 tv/live.m3u
+抓取 sources.txt 里的所有上游源 -> 去重 -> 按分类输出 tv/live.txt 与 tv/live.m3u
 
-判定口径：
-  m3u8_ok : playlist 能取到 #EXTM3U，且第一个分片真能下到数据
-  stream  : 直连流，HTTP 200 且带 Content-Type 视频/音频/octet-stream
-其余一律丢弃。
+默认「只聚合不探测」：GitHub runner 在境外，国内 IPTV 面板常对境外 IP 限流，
+实测会误杀还在跑的源，所以默认相信上游（它们自己会持续重扫）。
+设环境变量 PROBE=1 可恢复探测模式。
 """
 import json
 import os
@@ -24,6 +23,8 @@ OUT_DIR = os.path.join(ROOT, "tv")
 TIMEOUT = 6
 WORKERS = 100
 MAX_PER_CHANNEL = 4
+# 默认不探测：境外 runner 会误杀国内源；要开探测就设 PROBE=1
+PROBE = os.getenv("PROBE", "0") == "1"
 
 UA_LIST = [
     "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36",
@@ -299,11 +300,16 @@ def main():
         seen.add(ukey(u))
         cand.append((g, norm_name(n), u))
     urls = [u for _, _, u in cand]
-    print("唯一链接 %d 个，开始探测..." % len(urls))
-
-    res = probe_all(urls)
-    good = {u for u, r in res.items() if r in ("m3u8_ok", "stream")}
-    print("可播 %d / %d = %.1f%%" % (len(good), len(urls), len(good) / max(len(urls), 1) * 100))
+    if PROBE:
+        print("唯一链接 %d 个，开始探测..." % len(urls))
+        res = probe_all(urls)
+        good = {u for u, r in res.items() if r in ("m3u8_ok", "stream")}
+        print("可播 %d / %d = %.1f%%" % (len(good), len(urls), len(good) / max(len(urls), 1) * 100))
+        mode = "probe"
+    else:
+        print("唯一链接 %d 个，跳过探测直接聚合" % len(urls))
+        good = set(urls)
+        mode = "aggregate"
 
     chan = collections.defaultdict(list)
     group_of = {}
@@ -327,7 +333,8 @@ def main():
 
     total = write_output(rows)
     stats = {cat: {"channels": len({n for n, _ in rows[cat]}), "sources": len(rows[cat])} for cat in ORDER}
-    stats["_total"] = {"channels": len(chan), "sources": total, "probed": len(urls), "ok": len(good)}
+    stats["_total"] = {"channels": len(chan), "sources": total, "probed": len(urls),
+                       "ok": len(good), "mode": mode}
     json.dump(stats, open(os.path.join(ROOT, "stats.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=2)
     print(json.dumps(stats, ensure_ascii=False, indent=2))
