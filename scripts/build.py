@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-抓取 sources.txt 里的所有上游源 -> 去重 -> 按分类输出 tv/live.txt 与 tv/live.m3u
+抓取 sources.txt 里所有上游（URL 或仓库内文件）-> 去重 -> 分类输出 tv/live.txt、tv/live.m3u
 
 默认「只聚合不探测」：GitHub runner 在境外，国内 IPTV 面板常对境外 IP 限流，
-实测会误杀还在跑的源，所以默认相信上游（它们自己会持续重扫）。
-设环境变量 PROBE=1 可恢复探测模式。
+实测会误杀还在跑的源。设 PROBE=1 可恢复探测模式。
+
+URL 类上游拉取成功后，若备注以 xinyi 开头，会把原文快照到 data/<标签>.txt，
+供 sources.txt 里的 xinyi-cache 行兑底。
 """
 import json
 import os
@@ -19,11 +21,11 @@ import requests
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC_FILE = os.path.join(ROOT, "sources.txt")
 OUT_DIR = os.path.join(ROOT, "tv")
+DATA_DIR = os.path.join(ROOT, "data")
 
 TIMEOUT = 6
 WORKERS = 100
 MAX_PER_CHANNEL = 4
-# 默认不探测：境外 runner 会误杀国内源；要开探测就设 PROBE=1
 PROBE = os.getenv("PROBE", "0") == "1"
 
 UA_LIST = [
@@ -44,7 +46,6 @@ def http_get(url, ua=None, rng=True, timeout=TIMEOUT):
 
 
 def read_head(resp, limit=4096):
-    """只读前 limit 字节就断开——直连流是无限长的，读到底会永远挂住"""
     buf = b""
     try:
         for chunk in resp.iter_content(2048):
@@ -124,10 +125,21 @@ def load_sources():
         if not s or s.startswith("#") or "|" not in s:
             continue
         tag, url = s.split("|", 1)
-        text = fetch_text(url.strip())
-        if not text:
-            print("[skip] %s 抓取失败" % tag)
-            continue
+        tag, url = tag.strip(), url.strip()
+        if url.startswith(("http://", "https://")):
+            text = fetch_text(url)
+            if not text:
+                print("[skip] %s 抓取失败" % tag)
+                continue
+            if tag.startswith("xinyi") and re.match(r"^[A-Za-z0-9_-]+$", tag):
+                os.makedirs(DATA_DIR, exist_ok=True)
+                open(os.path.join(DATA_DIR, tag + ".txt"), "w", encoding="utf-8").write(text)
+        else:
+            path = url if os.path.isabs(url) else os.path.join(ROOT, url)
+            if not os.path.exists(path):
+                print("[skip] %s 本地文件不存在" % tag)
+                continue
+            text = open(path, encoding="utf-8").read()
         parsed = parse_txt(text)
         print("[ok] %s: %d 条" % (tag, len(parsed)))
         entries.extend(parsed)
@@ -219,7 +231,8 @@ PROV = ["北京", "天津", "上海", "重庆", "河北", "山西", "辽宁", "�
         "青岛", "大连", "宁波", "无锡", "温州", "绍兴", "嘉兴", "金华", "台州", "泉州",
         "东莞", "佛山"]
 GROUP_HINT = {"央视频道": "央视", "卫视频道": "卫视", "儿童频道": "儿童", "地方频道": "地方",
-              "数字频道": "地方"}
+              "数字频道": "地方", "央视": "央视", "卫视": "卫视", "地方": "地方",
+              "港澳": "港澳", "国际": "国际", "儿童": "儿童", "其他": "其他"}
 
 
 def norm_name(n):
