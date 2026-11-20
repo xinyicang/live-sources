@@ -12,24 +12,24 @@
     "sources": 135
   },
   "地方": {
-    "channels": 249,
-    "sources": 326
+    "channels": 245,
+    "sources": 321
   },
   "港澳": {
     "channels": 16,
     "sources": 22
   },
   "国际": {
-    "channels": 138,
-    "sources": 146
+    "channels": 140,
+    "sources": 149
   },
   "其他": {
-    "channels": 129,
-    "sources": 132
+    "channels": 130,
+    "sources": 133
   },
   "_total": {
-    "channels": 639,
-    "sources": 894,
+    "channels": 638,
+    "sources": 893,
     "probed": 894,
     "ok": 894,
     "mode": "aggregate"
