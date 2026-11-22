@@ -4,34 +4,34 @@
     "sources": 16
   },
   "央视": {
-    "channels": 52,
-    "sources": 118
+    "channels": 51,
+    "sources": 117
   },
   "卫视": {
     "channels": 45,
-    "sources": 136
+    "sources": 135
   },
   "地方": {
-    "channels": 240,
-    "sources": 315
+    "channels": 248,
+    "sources": 325
   },
   "港澳": {
     "channels": 16,
     "sources": 22
   },
   "国际": {
-    "channels": 144,
-    "sources": 152
+    "channels": 138,
+    "sources": 146
   },
   "其他": {
     "channels": 129,
     "sources": 132
   },
   "_total": {
-    "channels": 638,
-    "sources": 891,
-    "probed": 892,
-    "ok": 892,
+    "channels": 639,
+    "sources": 893,
+    "probed": 894,
+    "ok": 894,
     "mode": "aggregate"
   }
 }
