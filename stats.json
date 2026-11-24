@@ -1,7 +1,7 @@
 {
   "儿童": {
-    "channels": 12,
-    "sources": 16
+    "channels": 16,
+    "sources": 20
   },
   "央视": {
     "channels": 50,
@@ -12,26 +12,26 @@
     "sources": 135
   },
   "地方": {
-    "channels": 247,
-    "sources": 324
+    "channels": 245,
+    "sources": 321
   },
   "港澳": {
     "channels": 16,
     "sources": 22
   },
   "国际": {
-    "channels": 140,
-    "sources": 148
+    "channels": 142,
+    "sources": 151
   },
   "其他": {
-    "channels": 129,
-    "sources": 132
+    "channels": 132,
+    "sources": 136
   },
   "_total": {
-    "channels": 639,
-    "sources": 894,
-    "probed": 896,
-    "ok": 896,
+    "channels": 646,
+    "sources": 902,
+    "probed": 903,
+    "ok": 903,
     "mode": "aggregate"
   }
 }
