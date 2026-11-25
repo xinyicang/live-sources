@@ -9,11 +9,11 @@
   },
   "卫视": {
     "channels": 45,
-    "sources": 135
+    "sources": 136
   },
   "地方": {
-    "channels": 245,
-    "sources": 321
+    "channels": 246,
+    "sources": 322
   },
   "港澳": {
     "channels": 16,
@@ -24,14 +24,14 @@
     "sources": 151
   },
   "其他": {
-    "channels": 132,
-    "sources": 136
+    "channels": 131,
+    "sources": 135
   },
   "_total": {
     "channels": 646,
-    "sources": 902,
-    "probed": 903,
-    "ok": 903,
+    "sources": 903,
+    "probed": 906,
+    "ok": 906,
     "mode": "aggregate"
   }
 }
