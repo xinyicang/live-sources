@@ -30,8 +30,8 @@
   "_total": {
     "channels": 646,
     "sources": 902,
-    "probed": 902,
-    "ok": 902,
+    "probed": 904,
+    "ok": 904,
     "mode": "aggregate"
   }
 }
